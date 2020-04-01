@@ -1,0 +1,22 @@
+<?xml encoding="UTF-8"?>
+
+<!ELEMENT weatherForecast (weatherData)+>
+<!ATTLIST weatherForecast xmlns CDATA>
+
+<!ELEMENT weatherData (lat,lon,ob_time,temp,timezone)>
+<!ATTLIST weatherData xmlns CDATA>
+
+<!ELEMENT lat (#PCDATA)>
+<!ATTLIST lat xmlns CDATA>
+
+<!ELEMENT lon (#PCDATA)>
+<!ATTLIST lon xmlns CDATA>
+
+<!ELEMENT ob_time (#PCDATA)>
+<!ATTLIST ob_time xmlns CDATA>
+
+<!ELEMENT temp (#PCDATA)>
+<!ATTLIST temp xmlns CDATA>
+
+<!ELEMENT timezone (#PCDATA)>
+<!ATTLIST timezone xmlns CDATA>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<weatherForecast>
+    <weatherDataList>
+        <lat>35.0</lat>
+        <lon>70.0</lon>
+        <ob_time>2020-04-01T11:00</ob_time>
+        <temp>0.3</temp>
+        <timezone>Asia/Kabul</timezone>
+    </weatherDataList>
+    <weatherDataList>
+        <lat>35.0</lat>
+        <lon>70.0</lon>
+        <ob_time>2020-04-01T16:33:02</ob_time>
+        <temp>45.92</temp>
+        <timezone>Asia/Kabul</timezone>
+    </weatherDataList>
+</weatherForecast>

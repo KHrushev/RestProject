@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="702.0000000000001" y="828.0">com.example.restproject.controller.ClimacellAPIProcessor</node>
+    <node x="0.0" y="817.0">com.example.restproject.writers.WordWriter</node>
+    <node x="942.0000000000001" y="828.0">com.example.restproject.controller.DarkSkyProcessor</node>
+    <node x="295.1886363636364" y="618.0">com.example.restproject.model.WeatherForecast</node>
+    <node x="890.5738455988458" y="0.0">com.example.restproject.writers.LocalDateTimeAdapter</node>
+    <node x="584.3972222222224" y="1001.0">com.example.restproject.controller.ProcessManager</node>
+    <node x="260.0" y="839.0">com.example.restproject.writers.XMLResponseWriter</node>
+    <node x="487.0000000000001" y="839.0">com.example.restproject.writers.JSONResponseWriter</node>
+    <node x="1062.0738455988458" y="640.5">com.example.restproject.controller.Processor</node>
+    <node x="836.5738455988458" y="122.0">com.example.restproject.model.WeatherData</node>
+    <node x="1194.0" y="828.0">com.example.restproject.controller.WeatherAPIProcessor</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.example.restproject.writers.JSONResponseWriter" target="com.example.restproject.model.WeatherForecast">
+      <point x="0.0" y="-25.0" />
+      <point x="584.5000000000001" y="797.0" />
+      <point x="550.7886363636364" y="797.0" />
+      <point x="113.60000000000002" y="69.5" />
+    </edge>
+    <edge source="com.example.restproject.controller.ProcessManager" target="com.example.restproject.controller.Processor">
+      <point x="84.0" y="-70.0" />
+      <point x="812.3972222222224" y="961.0" />
+      <point x="1183.5" y="961.0" />
+      <point x="1183.5" y="797.0" />
+      <point x="1203.5024170274173" y="797.0" />
+      <point x="31.428571428571445" y="47.0" />
+    </edge>
+    <edge source="com.example.restproject.controller.ProcessManager" target="com.example.restproject.controller.ClimacellAPIProcessor">
+      <point x="12.0" y="-70.0" />
+      <point x="740.3972222222224" y="931.0" />
+      <point x="812.0000000000001" y="931.0" />
+      <point x="0.0" y="36.0" />
+    </edge>
+    <edge source="com.example.restproject.controller.ProcessManager" target="com.example.restproject.controller.DarkSkyProcessor">
+      <point x="36.0" y="-70.0" />
+      <point x="764.3972222222224" y="941.0" />
+      <point x="1052.0" y="941.0" />
+      <point x="0.0" y="36.0" />
+    </edge>
+    <edge source="com.example.restproject.writers.WordWriter" target="com.example.restproject.model.WeatherForecast">
+      <point x="0.0" y="-47.0" />
+      <point x="120.0" y="797.0" />
+      <point x="323.5886363636364" y="797.0" />
+      <point x="-113.60000000000002" y="69.5" />
+    </edge>
+    <edge source="com.example.restproject.controller.ProcessManager" target="com.example.restproject.model.WeatherData">
+      <point x="132.0" y="-70.0" />
+      <point x="860.3972222222224" y="981.0" />
+      <point x="1424.5" y="981.0" />
+      <point x="1424.5" y="568.0" />
+      <point x="1149.1849567099569" y="568.0" />
+      <point x="147.11111111111103" y="213.0" />
+    </edge>
+    <edge source="com.example.restproject.controller.DarkSkyProcessor" target="com.example.restproject.controller.Processor">
+      <point x="27.5" y="-36.0" />
+      <point x="1079.5" y="797.0" />
+      <point x="1109.2167027417029" y="797.0" />
+      <point x="-62.85714285714283" y="47.0" />
+    </edge>
+    <edge source="com.example.restproject.controller.ProcessManager" target="com.example.restproject.writers.WordWriter">
+      <point x="-132.0" y="-70.0" />
+      <point x="596.3972222222224" y="981.0" />
+      <point x="60.0" y="981.0" />
+      <point x="-60.0" y="47.0" />
+    </edge>
+    <edge source="com.example.restproject.controller.WeatherAPIProcessor" target="com.example.restproject.model.WeatherData">
+      <point x="82.5" y="-36.0" />
+      <point x="1386.5" y="797.0" />
+      <point x="1378.0" y="797.0" />
+      <point x="1378.0" y="578.0" />
+      <point x="1112.407178932179" y="578.0" />
+      <point x="110.3333333333332" y="213.0" />
+    </edge>
+    <edge source="com.example.restproject.controller.WeatherAPIProcessor" target="com.example.restproject.controller.Processor">
+      <point x="-27.5" y="-36.0" />
+      <point x="1276.5" y="797.0" />
+      <point x="1266.35955988456" y="797.0" />
+      <point x="94.28571428571428" y="47.0" />
+    </edge>
+    <edge source="com.example.restproject.controller.Processor" target="com.example.restproject.model.WeatherData">
+      <point x="0.0" y="-47.0" />
+      <point x="1172.0738455988458" y="598.0" />
+      <point x="1038.8516233766236" y="598.0" />
+      <point x="36.77777777777777" y="213.0" />
+    </edge>
+    <edge source="com.example.restproject.controller.ClimacellAPIProcessor" target="com.example.restproject.controller.Processor">
+      <point x="55.0" y="-36.0" />
+      <point x="867.0000000000001" y="787.0" />
+      <point x="1077.7881313131315" y="787.0" />
+      <point x="-94.28571428571428" y="47.0" />
+    </edge>
+    <edge source="com.example.restproject.controller.ClimacellAPIProcessor" target="com.example.restproject.model.WeatherData">
+      <point x="-55.0" y="-36.0" />
+      <point x="757.0000000000001" y="598.0" />
+      <point x="928.5182900432902" y="598.0" />
+      <point x="-73.5555555555556" y="213.0" />
+    </edge>
+    <edge source="com.example.restproject.controller.DarkSkyProcessor" target="com.example.restproject.model.WeatherData">
+      <point x="-82.5" y="-36.0" />
+      <point x="969.5000000000001" y="777.0" />
+      <point x="982.4886363636365" y="777.0" />
+      <point x="982.4886363636365" y="598.0" />
+      <point x="965.296067821068" y="598.0" />
+      <point x="-36.77777777777777" y="213.0" />
+    </edge>
+    <edge source="com.example.restproject.model.WeatherData" target="com.example.restproject.writers.LocalDateTimeAdapter">
+      <point x="-5.6843418860808015E-14" y="-213.0" />
+      <point x="0.0" y="36.0" />
+    </edge>
+    <edge source="com.example.restproject.writers.XMLResponseWriter" target="com.example.restproject.model.WeatherForecast">
+      <point x="0.0" y="-25.0" />
+      <point x="357.5" y="797.0" />
+      <point x="380.38863636363646" y="797.0" />
+      <point x="-56.799999999999955" y="69.5" />
+    </edge>
+    <edge source="com.example.restproject.controller.ProcessManager" target="com.example.restproject.writers.JSONResponseWriter">
+      <point x="-12.0" y="-70.0" />
+      <point x="716.3972222222224" y="931.0" />
+      <point x="584.5000000000001" y="931.0" />
+      <point x="0.0" y="25.0" />
+    </edge>
+    <edge source="com.example.restproject.controller.ProcessManager" target="com.example.restproject.writers.XMLResponseWriter">
+      <point x="-84.0" y="-70.0" />
+      <point x="644.3972222222224" y="961.0" />
+      <point x="357.5" y="961.0" />
+      <point x="0.0" y="25.0" />
+    </edge>
+    <edge source="com.example.restproject.controller.ProcessManager" target="com.example.restproject.controller.WeatherAPIProcessor">
+      <point x="108.0" y="-70.0" />
+      <point x="836.3972222222224" y="971.0" />
+      <point x="1304.0" y="971.0" />
+      <point x="0.0" y="36.0" />
+    </edge>
+    <edge source="com.example.restproject.controller.ProcessManager" target="com.example.restproject.model.WeatherForecast">
+      <point x="-60.0" y="-70.0" />
+      <point x="668.3972222222224" y="951.0" />
+      <point x="465.5000000000001" y="951.0" />
+      <point x="465.5000000000001" y="797.0" />
+      <point x="437.1886363636364" y="797.0" />
+      <point x="0.0" y="69.5" />
+    </edge>
+    <edge source="com.example.restproject.model.WeatherForecast" target="com.example.restproject.model.WeatherData">
+      <point x="-71.0" y="-69.5" />
+      <point x="366.1886363636364" y="578.0" />
+      <point x="854.9627344877347" y="578.0" />
+      <point x="-147.11111111111114" y="213.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.7708871662360034" x="712.5" y="570.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Constructors</Category>
+    <Category>Methods</Category>
+    <Category>Inner Classes</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
