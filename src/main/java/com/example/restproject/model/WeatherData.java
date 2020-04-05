@@ -81,7 +81,7 @@ public class WeatherData implements Serializable {
                 "lat=" + lat +
                 ", lon=" + lon +
                 ", temp=" + temp +
-                ", cityName='" + timezone + '\'' +
+                ", timezone='" + timezone + '\'' +
                 ", observationTime=" + ob_time +
                 "}";
     }

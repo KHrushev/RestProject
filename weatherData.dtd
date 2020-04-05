@@ -1,7 +1,7 @@
 <?xml encoding="UTF-8"?>
 
-<!ELEMENT weatherForecast (weatherData)+>
-<!ATTLIST weatherForecast xmlns CDATA>
+<!ELEMENT weatherDataList (weatherData)+>
+<!ATTLIST weatherDataList xmlns CDATA>
 
 <!ELEMENT weatherData (lat,lon,ob_time,temp,timezone)>
 <!ATTLIST weatherData xmlns CDATA>

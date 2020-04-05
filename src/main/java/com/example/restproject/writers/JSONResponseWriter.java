@@ -1,6 +1,6 @@
 package com.example.restproject.writers;
 
-import com.example.restproject.model.WeatherForecast;
+import com.example.restproject.model.WeatherDataList;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 
 import javax.xml.bind.JAXBContext;
@@ -11,10 +11,10 @@ import java.io.FileOutputStream;
 
 public class JSONResponseWriter {
 
-    public static void write(WeatherForecast data) throws JAXBException, FileNotFoundException {
+    public static void write(WeatherDataList data) throws JAXBException, FileNotFoundException {
         System.setProperty("javax.xml.bind.context.factory", "org.eclipse.persistence.jaxb.JAXBContextFactory");
 
-        JAXBContext context = JAXBContext.newInstance(WeatherForecast.class);
+        JAXBContext context = JAXBContext.newInstance(WeatherDataList.class);
         Marshaller marshaller = context.createMarshaller();
 
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

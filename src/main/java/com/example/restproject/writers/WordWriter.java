@@ -1,6 +1,6 @@
 package com.example.restproject.writers;
 
-import com.example.restproject.model.WeatherForecast;
+import com.example.restproject.model.WeatherDataList;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.xwpf.usermodel.*;
 
@@ -60,13 +60,13 @@ public class WordWriter {
 
         JAXBContext jaxbContext;
         try {
-            jaxbContext = JAXBContext.newInstance(WeatherForecast.class);
+            jaxbContext = JAXBContext.newInstance(WeatherDataList.class);
 
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
-            WeatherForecast forecast = (WeatherForecast) jaxbUnmarshaller.unmarshal(forecastFile);
+            WeatherDataList forecast = (WeatherDataList) jaxbUnmarshaller.unmarshal(forecastFile);
 
-            return forecast.toString();
+            return forecast.getWeatherDataList().toString();
         }
         catch (JAXBException e) {
             System.out.println("Got JAXBException trying to read forecast from API response file.");

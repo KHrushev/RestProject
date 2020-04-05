@@ -7,9 +7,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
 
 public interface Processor {
-    WeatherData process(float lat, float lon);
+    WeatherData today(float lat, float lon);
+    WeatherData future(LocalDate date, float lat, float lon);
+    boolean canProcessDate(LocalDate date);
     WeatherData format(String data);
 
     default String getAPIResponse(String url) throws IOException {
