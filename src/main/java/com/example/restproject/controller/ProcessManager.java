@@ -6,6 +6,7 @@ import com.example.restproject.model.WeatherDataList;
 import com.example.restproject.writers.JSONResponseWriter;
 import com.example.restproject.writers.WordWriter;
 import com.example.restproject.writers.XMLResponseWriter;
+import org.slf4j.Logger;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @RestController
 public class ProcessManager {
+    private Logger logger = new LoggingController().logger;
     private List<Processor> processors = new ArrayList<>();
 
     public ProcessManager() {
@@ -45,6 +47,7 @@ public class ProcessManager {
             try {
                 processThread.join();
             } catch (InterruptedException e) {
+                logger.error("Got InterruptedException trying to access thread that was getting the API response.");
                 return "Got InterruptedException trying to access thread that was getting the API response.";
             }
         }
@@ -65,8 +68,10 @@ public class ProcessManager {
             }
 
         } catch (DateTimeParseException dateTimeParseException) {
+            logger.error("Unable to parse given date, required format is: 'date=YYYY-MM-DD'");
             return "Unable to parse given date, required format is: 'date=YYYY-MM-DD'";
         } catch (IncorrectDateException e) {
+            logger.error("Entered date is either too far into the future or it is already in the past, so our services cannot process such request. Maximum forecast available right now is a 16 day forecast.");
             return "Entered date is either too far into the future or it is already in the past, so our services cannot process such request. Maximum forecast available right now is a 16 day forecast.";
         }
 
@@ -82,6 +87,7 @@ public class ProcessManager {
             try {
                 processThread.join();
             } catch (InterruptedException e) {
+                logger.error("Got InterruptedException trying to access thread that was getting the API response.");
                 return "Got InterruptedException trying to access thread that was getting the API response.";
             }
         }
@@ -95,6 +101,7 @@ public class ProcessManager {
         try {
             localDate = LocalDate.parse(date);
         } catch (DateTimeParseException dateTimeParseException) {
+            logger.error("Unable to parse given date, required format for date is: 'YYYY-MM-DD'");
             return "Unable to parse given date, required format for date is: 'YYYY-MM-DD'";
         }
 
@@ -107,6 +114,7 @@ public class ProcessManager {
                 }
             }
         } catch (IncorrectLocationException locationExc) {
+            logger.error("No rows were returned. Please verify the location and dates requested");
             return "No rows were returned. Please verify the location and dates requested";
         }
 
@@ -129,10 +137,10 @@ public class ProcessManager {
                     return "Incorrect Save Parameter.";
                 }
             } catch (JAXBException e) {
-                System.out.println("Got JAXBException trying to marshall data into file");
+                logger.error("Got JAXBException trying to marshall data into file");
                 e.printStackTrace();
             } catch (FileNotFoundException e) {
-                System.out.println("Couldn't find file to marshall data into.");
+                logger.error("Couldn't find file to marshall data into.");
                 e.printStackTrace();
             }
 
@@ -150,10 +158,10 @@ public class ProcessManager {
                     return "Incorrect Save Parameter.";
                 }
             } catch (JAXBException e) {
-                System.out.println("Got JAXBException trying to marshall data into file");
+                logger.error("Got JAXBException trying to marshall data into file");
                 e.printStackTrace();
             } catch (FileNotFoundException e) {
-                System.out.println("Couldn't find file to marshall data into.");
+                logger.error("Couldn't find file to marshall data into.");
                 e.printStackTrace();
             }
 

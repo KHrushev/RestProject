@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class WeatherAPIProcessor implements Processor {
+    private Logger logger = new LoggingController().logger;
     private final int FORECAST_DAY_LIMIT = 16;
 
     @Override
@@ -28,7 +30,7 @@ public class WeatherAPIProcessor implements Processor {
 
             return format(response);
         } catch (IOException e) {
-            System.out.println("Got IOException while trying to get/format API response.");
+            logger.error("Got IOException while trying to get/format API response.");
             return null;
         }
     }
@@ -47,7 +49,7 @@ public class WeatherAPIProcessor implements Processor {
 
             return formatFuture(response, date);
         } catch (IOException e) {
-            System.out.println("Got IOExceptin while getting/formatting the API Response");
+            logger.error("Got IOExceptin while getting/formatting the API Response");
             e.printStackTrace();
         }
 
@@ -95,7 +97,8 @@ public class WeatherAPIProcessor implements Processor {
 
             return weatherData;
         } catch (JsonProcessingException e) {
-            System.out.println("JsonProcessingException occurred while trying to format API response.");
+            logger.error("JsonProcessingException occurred while trying to format API response.");
+            e.printStackTrace();
             return null;
         }
     }
@@ -122,7 +125,7 @@ public class WeatherAPIProcessor implements Processor {
 
             return weatherData;
         } catch (JsonProcessingException e) {
-            System.out.println("JsonProcessingException occurred while trying to format API response.");
+            logger.error("JsonProcessingException occurred while trying to format API response.");
             e.printStackTrace();
             return null;
         }

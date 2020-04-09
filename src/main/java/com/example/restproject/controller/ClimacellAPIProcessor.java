@@ -10,13 +10,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import org.slf4j.Logger;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-
 public class ClimacellAPIProcessor implements Processor{
+    private Logger logger = new LoggingController().logger;
     private final int FORECAST_DAY_LIMIT = 3;
 
     @Override
@@ -30,6 +31,7 @@ public class ClimacellAPIProcessor implements Processor{
 
             return format(response.getBody());
         } catch (UnirestException e) {
+            logger.error("Got UnirestException while trying to get ClimaCell API response.");
             e.printStackTrace();
             return null;
         }
@@ -53,13 +55,13 @@ public class ClimacellAPIProcessor implements Processor{
 
             return format(node.toString());
         } catch (UnirestException e) {
-            System.out.println("Got UnirestException while trying to get weather forecast via ClimaCell");
+            logger.error("Got UnirestException while trying to get weather forecast via ClimaCell");
             e.printStackTrace();
         } catch (JsonMappingException e) {
-            System.out.println("Got JsonMappingException while trying to get weather forecast via ClimaCell");
+            logger.error("Got JsonMappingException while trying to get weather forecast via ClimaCell");
             e.printStackTrace();
         } catch (JsonProcessingException e) {
-            System.out.println("Got JsonProcessingException while trying to get weather forecast via ClimaCell");
+            logger.error("Got JsonProcessingException while trying to get weather forecast via ClimaCell");
             e.printStackTrace();
         }
 
@@ -111,10 +113,10 @@ public class ClimacellAPIProcessor implements Processor{
 
             return weatherData;
         } catch (JsonMappingException e) {
-            System.out.println("JsonMappingException occurred while trying to format API response.");
+            logger.error("JsonMappingException occurred while trying to format API response.");
             e.printStackTrace();
         } catch (JsonProcessingException e) {
-            System.out.println("JsonProcessingException occurred while trying to format API response.");
+            logger.error("JsonProcessingException occurred while trying to format API response.");
             e.printStackTrace();
         }
 

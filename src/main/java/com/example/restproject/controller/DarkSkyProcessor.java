@@ -8,11 +8,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.time.*;
 
 public class DarkSkyProcessor implements Processor {
+    private Logger logger = new LoggingController().logger;
     private final int FORECAST_DAY_LIMIT = 7;
 
     @Override
@@ -30,7 +32,8 @@ public class DarkSkyProcessor implements Processor {
 
             return weatherData;
         } catch (IOException e) {
-            System.out.println("Error occurred while trying to get/format API response.");
+            logger.error("Error occurred while trying to get/format API response.");
+            e.printStackTrace();
             return null;
         }
     }
@@ -48,7 +51,7 @@ public class DarkSkyProcessor implements Processor {
 
             return formatForecast(response, difference);
         } catch (IOException e) {
-            System.out.println("Got IOException trying to get forecast from DarkSky API.");
+            logger.error("Got IOException trying to get forecast from DarkSky API.");
             e.printStackTrace();
             return null;
         }
@@ -97,7 +100,7 @@ public class DarkSkyProcessor implements Processor {
 
             return weatherData;
         } catch (JsonProcessingException e) {
-            System.out.println("Error occurred while trying to format API response.");
+            logger.error("Error occurred while trying to format API response.");
             return null;
         }
     }
@@ -128,10 +131,10 @@ public class DarkSkyProcessor implements Processor {
 
             return weatherData;
         } catch (JsonMappingException e) {
-            System.out.println("Got JsonMappingException trying to format forecast data.");
+            logger.error("Got JsonMappingException trying to format forecast data.");
             e.printStackTrace();
         } catch (JsonProcessingException e) {
-            System.out.println("Got JsonProcessingException trying to format forecast data.");
+            logger.error("Got JsonProcessingException trying to format forecast data.");
             e.printStackTrace();
         }
 
