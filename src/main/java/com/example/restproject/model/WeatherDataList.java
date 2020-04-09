@@ -10,7 +10,7 @@ import java.util.List;
 
 @XmlRootElement(name = "weatherForecast")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class WeatherDataList implements Serializable {
+public class WeatherDataList implements Serializable, Data {
     private List<WeatherData> weatherDataList = new ArrayList<>();
 
     public void addWeatherData(WeatherData data) {

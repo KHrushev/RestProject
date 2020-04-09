@@ -1,5 +1,6 @@
 package com.example.restproject.controller;
 
+import com.example.restproject.model.ExtremeWeatherData;
 import com.example.restproject.model.WeatherData;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -54,8 +55,23 @@ public class DarkSkyProcessor implements Processor {
     }
 
     @Override
+    public ExtremeWeatherData getExtremeWeatherData(LocalDate date, String location) {
+        return null;
+    }
+
+    @Override
+    public boolean canNowcast() {
+        return true;
+    }
+
+    @Override
     public boolean canProcessDate(LocalDate date) {
         return !(date.toEpochDay() > LocalDate.now().plusDays(FORECAST_DAY_LIMIT).toEpochDay());
+    }
+
+    @Override
+    public boolean canProcessExtremeData() {
+        return false;
     }
 
     @Override
@@ -90,7 +106,7 @@ public class DarkSkyProcessor implements Processor {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        JsonNode forecast = null;
+        JsonNode forecast;
         try {
             forecast = mapper.readTree(data);
 

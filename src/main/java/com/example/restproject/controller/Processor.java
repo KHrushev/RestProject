@@ -1,5 +1,6 @@
 package com.example.restproject.controller;
 
+import com.example.restproject.model.ExtremeWeatherData;
 import com.example.restproject.model.WeatherData;
 
 import java.io.BufferedReader;
@@ -12,7 +13,11 @@ import java.time.LocalDate;
 public interface Processor {
     WeatherData today(float lat, float lon);
     WeatherData future(LocalDate date, float lat, float lon);
+    ExtremeWeatherData getExtremeWeatherData(LocalDate date, String location) throws IncorrectLocationException;
+
+    boolean canNowcast();
     boolean canProcessDate(LocalDate date);
+    boolean canProcessExtremeData();
     WeatherData format(String data);
 
     default String getAPIResponse(String url) throws IOException {

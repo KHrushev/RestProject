@@ -1,5 +1,6 @@
 package com.example.restproject.controller;
 
+import com.example.restproject.model.ExtremeWeatherData;
 import com.example.restproject.model.WeatherData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -66,8 +67,23 @@ public class ClimacellAPIProcessor implements Processor{
     }
 
     @Override
+    public ExtremeWeatherData getExtremeWeatherData(LocalDate date, String location) {
+        return null;
+    }
+
+    @Override
+    public boolean canNowcast() {
+        return true;
+    }
+
+    @Override
     public boolean canProcessDate(LocalDate date) {
         return !(date.toEpochDay() > LocalDate.now().plusDays(FORECAST_DAY_LIMIT).toEpochDay());
+    }
+
+    @Override
+    public boolean canProcessExtremeData() {
+        return false;
     }
 
     @Override
