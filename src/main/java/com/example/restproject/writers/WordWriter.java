@@ -1,6 +1,6 @@
 package com.example.restproject.writers;
 
-import com.example.restproject.model.ExtremeWeatherData;
+import com.example.restproject.model.Alert;
 import com.example.restproject.model.WeatherDataList;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.xwpf.usermodel.*;
@@ -23,7 +23,7 @@ public class WordWriter {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("Weather Data:");
+        titleRun.setText("Data:");
         titleRun.setBold(true);
         titleRun.setFontFamily("Courier");
         titleRun.setFontSize(20);
@@ -36,10 +36,10 @@ public class WordWriter {
 
         if (fileName.endsWith("xml") && fileName.contains("forecast")) {
             forecastString = getForecastStringXML(fileName);
-        } else if (fileName.endsWith("json") && (fileName.contains("forecast") || fileName.contains("extreme"))) {
+        } else if (fileName.endsWith("json") && (fileName.contains("forecast") || fileName.contains("alert"))) {
             forecastString = getDataStringJSON(fileName);
-        } else if (fileName.endsWith("xml") && fileName.contains("extreme")){
-            forecastString = getExtremeDataStringXML(fileName);
+        } else if (fileName.endsWith("xml") && fileName.contains("alert")){
+            forecastString = getAlertStringXML(fileName);
         }
 
         contentRun.setText(forecastString);
@@ -57,16 +57,16 @@ public class WordWriter {
         }
     }
 
-    private String getExtremeDataStringXML(String fileName) {
-        File forecastFile = new File(fileName);
+    private String getAlertStringXML(String fileName) {
+        File alertFile = new File(fileName);
 
         JAXBContext jaxbContext;
         try {
-            jaxbContext = JAXBContext.newInstance(ExtremeWeatherData.class);
+            jaxbContext = JAXBContext.newInstance(Alert.class);
 
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
-            ExtremeWeatherData data = (ExtremeWeatherData) jaxbUnmarshaller.unmarshal(forecastFile);
+            Alert data = (Alert) jaxbUnmarshaller.unmarshal(alertFile);
 
             return data.toString();
         }

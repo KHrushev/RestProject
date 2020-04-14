@@ -1,7 +1,7 @@
 package com.example.restproject.controller;
 
+import com.example.restproject.model.Alert;
 import com.example.restproject.model.Data;
-import com.example.restproject.model.ExtremeWeatherData;
 import com.example.restproject.model.WeatherDataList;
 import com.example.restproject.writers.JSONResponseWriter;
 import com.example.restproject.writers.WordWriter;
@@ -28,19 +28,24 @@ public class ProcessManager {
         this.processors.add(new WeatherAPIProcessor());
         this.processors.add(new DarkSkyProcessor());
         this.processors.add(new ClimacellAPIProcessor());
-        this.processors.add(new WeatherBitProcessor());
     }
 
     @RequestMapping("/today")
     public String todayForecast(@RequestParam(value = "lat", defaultValue = "51") float lat, @RequestParam(value = "lon", defaultValue = "0") float lon, @RequestParam(value = "save", defaultValue = "xml") String saveMethod) {
         WeatherDataList weatherDataList = new WeatherDataList();
 
+        if (Math.abs(lon) >= 180 || Math.abs(lat) >= 90) {
+            return "Invalid coordinates";
+        }
+
         ArrayList<ProcessThread> processThreads = new ArrayList<>();
 
         for (Processor processor: processors) {
-            ProcessThread processThread = new ProcessThread(processor, weatherDataList, lat, lon);
-            processThread.start();
-            processThreads.add(processThread);
+            if (processor.canNowcast()) {
+                ProcessThread processThread = new ProcessThread(processor, weatherDataList, lat, lon);
+                processThread.start();
+                processThreads.add(processThread);
+            }
         }
 
         for (ProcessThread processThread: processThreads) {
@@ -58,6 +63,10 @@ public class ProcessManager {
     @RequestMapping("/future")
     public String futureForecast(@RequestParam(value = "date") String date, @RequestParam(value = "lat", defaultValue = "51") float lat, @RequestParam(value = "lon", defaultValue = "0") float lon, @RequestParam(value = "save", defaultValue = "xml") String saveMethod) {
         WeatherDataList weatherDataList = new WeatherDataList();
+
+        if (Math.abs(lon) >= 180 || Math.abs(lat) >= 90) {
+            return "Invalid coordinates";
+        }
 
         LocalDate localDate = null;
         try {
@@ -78,9 +87,11 @@ public class ProcessManager {
         ArrayList<ProcessThread> processThreads = new ArrayList<>();
 
         for (Processor processor: processors) {
-            ProcessThread processThread = new ProcessThread(processor, weatherDataList, localDate, lat, lon);
-            processThread.start();
-            processThreads.add(processThread);
+            if(processor.canProcessDate(localDate)) {
+                ProcessThread processThread = new ProcessThread(processor, weatherDataList, localDate, lat, lon);
+                processThread.start();
+                processThreads.add(processThread);
+            }
         }
 
         for (ProcessThread processThread: processThreads) {
@@ -95,22 +106,18 @@ public class ProcessManager {
         return writeData(saveMethod, weatherDataList);
     }
 
-    @RequestMapping("/minmaxdata")
-    public String extremeWeatherData(@RequestParam(value = "date") String date, @RequestParam(value = "location", defaultValue = "51,50") String location, @RequestParam(value = "save", defaultValue = "xml") String saveMethod) {
-        LocalDate localDate = null;
-        try {
-            localDate = LocalDate.parse(date);
-        } catch (DateTimeParseException dateTimeParseException) {
-            logger.error("Unable to parse given date, required format for date is: 'YYYY-MM-DD'");
-            return "Unable to parse given date, required format for date is: 'YYYY-MM-DD'";
-        }
+    @RequestMapping("/alerts")
+    public String alerts(@RequestParam(value = "lat", defaultValue = "51") float lat, @RequestParam(value = "lon", defaultValue = "0") float lon, @RequestParam(value = "save", defaultValue = "xml") String saveMethod) {
+        Alert alert = null;
 
-        ExtremeWeatherData extremeWeatherData = new ExtremeWeatherData();
+        if (Math.abs(lon) >= 180 || Math.abs(lat) >= 90) {
+            return "Invalid coordinates";
+        }
 
         try {
             for (Processor processor: processors) {
-                if (processor.canProcessExtremeData()) {
-                    extremeWeatherData = processor.getExtremeWeatherData(localDate, location);
+                if (processor.canProcessAlerts()) {
+                    alert = processor.getAlerts(lat, lon);
                 }
             }
         } catch (IncorrectLocationException locationExc) {
@@ -118,7 +125,7 @@ public class ProcessManager {
             return "No rows were returned. Please verify the location and dates requested";
         }
 
-        return writeData(saveMethod, extremeWeatherData);
+        return writeData(saveMethod, alert);
     }
 
     private String writeData(String saveMethod, Data data) {
@@ -145,15 +152,15 @@ public class ProcessManager {
             }
 
             return weatherDataList.getWeatherDataList().toString();
-        } else if (data instanceof ExtremeWeatherData) {
-            ExtremeWeatherData extremeWeatherData = (ExtremeWeatherData) data;
+        } else if (data instanceof Alert) {
+            Alert alert = (Alert) data;
             try {
                 if (saveMethod.equals("xml")) {
-                    XMLResponseWriter.write(extremeWeatherData);
-                    wordWriter.write("extremeWeatherData.xml");
+                    XMLResponseWriter.write(alert);
+                    wordWriter.write("alert.xml");
                 } else if (saveMethod.equals("json")) {
-                    JSONResponseWriter.write(extremeWeatherData);
-                    wordWriter.write("extremeWeatherData.json");
+                    JSONResponseWriter.write(alert);
+                    wordWriter.write("alert.json");
                 } else {
                     return "Incorrect Save Parameter.";
                 }

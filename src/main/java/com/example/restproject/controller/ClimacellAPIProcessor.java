@@ -1,6 +1,6 @@
 package com.example.restproject.controller;
 
-import com.example.restproject.model.ExtremeWeatherData;
+import com.example.restproject.model.Alert;
 import com.example.restproject.model.WeatherData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -24,7 +24,7 @@ public class ClimacellAPIProcessor implements Processor{
     public WeatherData today(float lat, float lon) {
         HttpResponse<String> response = null;
         try {
-            response = Unirest.get("https://climacell-microweather-v1.p.rapidapi.com/weather/realtime?fields=temp&lat=42.8237618&lon=-71.2216286")
+            response = Unirest.get("https://climacell-microweather-v1.p.rapidapi.com/weather/realtime?fields=temp&lat=" + lat + "&lon=" + lon)
                     .header("x-rapidapi-host", "climacell-microweather-v1.p.rapidapi.com")
                     .header("x-rapidapi-key", "97455ed33amsha8b9ff0ed65c295p1e9f82jsn06747edd46fc")
                     .asString();
@@ -69,7 +69,7 @@ public class ClimacellAPIProcessor implements Processor{
     }
 
     @Override
-    public ExtremeWeatherData getExtremeWeatherData(LocalDate date, String location) {
+    public Alert getAlerts(double lat, double lon) {
         return null;
     }
 
@@ -84,7 +84,7 @@ public class ClimacellAPIProcessor implements Processor{
     }
 
     @Override
-    public boolean canProcessExtremeData() {
+    public boolean canProcessAlerts() {
         return false;
     }
 

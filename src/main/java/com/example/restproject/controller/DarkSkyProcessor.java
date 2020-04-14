@@ -1,6 +1,6 @@
 package com.example.restproject.controller;
 
-import com.example.restproject.model.ExtremeWeatherData;
+import com.example.restproject.model.Alert;
 import com.example.restproject.model.WeatherData;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -58,7 +58,7 @@ public class DarkSkyProcessor implements Processor {
     }
 
     @Override
-    public ExtremeWeatherData getExtremeWeatherData(LocalDate date, String location) {
+    public Alert getAlerts(double lat, double lon) {
         return null;
     }
 
@@ -73,7 +73,7 @@ public class DarkSkyProcessor implements Processor {
     }
 
     @Override
-    public boolean canProcessExtremeData() {
+    public boolean canProcessAlerts() {
         return false;
     }
 
