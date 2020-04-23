@@ -1,6 +1,7 @@
 package com.example.restproject.writers;
 
-import com.example.restproject.model.WeatherForecast;
+import com.example.restproject.model.Alert;
+import com.example.restproject.model.WeatherDataList;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.xwpf.usermodel.*;
 
@@ -22,7 +23,7 @@ public class WordWriter {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("Forecast:");
+        titleRun.setText("Data:");
         titleRun.setBold(true);
         titleRun.setFontFamily("Courier");
         titleRun.setFontSize(20);
@@ -33,10 +34,12 @@ public class WordWriter {
         XWPFRun contentRun = content.createRun();
         String forecastString = "";
 
-        if (fileName.endsWith("xml")) {
+        if (fileName.endsWith("xml") && fileName.contains("forecast")) {
             forecastString = getForecastStringXML(fileName);
-        } else if (fileName.endsWith("json")) {
-            forecastString = getForecastStringJSON(fileName);
+        } else if (fileName.endsWith("json") && (fileName.contains("forecast") || fileName.contains("alert"))) {
+            forecastString = getDataStringJSON(fileName);
+        } else if (fileName.endsWith("xml") && fileName.contains("alert")){
+            forecastString = getAlertStringXML(fileName);
         }
 
         contentRun.setText(forecastString);
@@ -54,19 +57,18 @@ public class WordWriter {
         }
     }
 
-
-    private String getForecastStringXML(String fileName) {
-        File forecastFile = new File(fileName);
+    private String getAlertStringXML(String fileName) {
+        File alertFile = new File(fileName);
 
         JAXBContext jaxbContext;
         try {
-            jaxbContext = JAXBContext.newInstance(WeatherForecast.class);
+            jaxbContext = JAXBContext.newInstance(Alert.class);
 
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
-            WeatherForecast forecast = (WeatherForecast) jaxbUnmarshaller.unmarshal(forecastFile);
+            Alert data = (Alert) jaxbUnmarshaller.unmarshal(alertFile);
 
-            return forecast.toString();
+            return data.toString();
         }
         catch (JAXBException e) {
             System.out.println("Got JAXBException trying to read forecast from API response file.");
@@ -75,7 +77,27 @@ public class WordWriter {
         }
     }
 
-    private String getForecastStringJSON(String fileName) {
+    private String getForecastStringXML(String fileName) {
+        File forecastFile = new File(fileName);
+
+        JAXBContext jaxbContext;
+        try {
+            jaxbContext = JAXBContext.newInstance(WeatherDataList.class);
+
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+            WeatherDataList forecast = (WeatherDataList) jaxbUnmarshaller.unmarshal(forecastFile);
+
+            return forecast.getWeatherDataList().toString();
+        }
+        catch (JAXBException e) {
+            System.out.println("Got JAXBException trying to read forecast from API response file.");
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    private String getDataStringJSON(String fileName) {
         try {
             String forecastString = FileUtils.readFileToString(new File(fileName), StandardCharsets.UTF_8);
             forecastString = forecastString.replaceAll(" ", "");
