@@ -1,7 +1,9 @@
-package com.example.restproject.controller;
+package com.restproject.controller;
 
-import com.example.restproject.model.Alert;
-import com.example.restproject.model.WeatherData;
+import com.restproject.model.Alert;
+import com.restproject.model.InaccessibleAPIException;
+import com.restproject.model.IncorrectLocationException;
+import com.restproject.model.WeatherData;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,8 +12,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
 
-public interface Processor {
-    WeatherData today(float lat, float lon);
+public interface Controller {
+    WeatherData today(float lat, float lon) throws InaccessibleAPIException;
     WeatherData future(LocalDate date, float lat, float lon);
     Alert getAlerts(double lat, double lon) throws IncorrectLocationException;
 

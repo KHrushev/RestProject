@@ -1,18 +1,24 @@
-package com.example.restproject.controller;
+package com.restproject.controller;
 
-import com.example.restproject.model.Alert;
-import com.example.restproject.model.Data;
-import com.example.restproject.model.WeatherDataList;
-import com.example.restproject.writers.JSONResponseWriter;
-import com.example.restproject.writers.WordWriter;
-import com.example.restproject.writers.XMLResponseWriter;
+import com.restproject.model.*;
+import com.restproject.writers.JSONWriter;
+import com.restproject.writers.WordWriter;
+import com.restproject.writers.XMLWriter;
 import org.slf4j.Logger;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.xml.bind.JAXBException;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -20,14 +26,15 @@ import java.util.List;
 
 
 @RestController
-public class ProcessManager {
+public class MainController {
     private Logger logger = new LoggingController().logger;
-    private List<Processor> processors = new ArrayList<>();
+    private List<Controller> controllers = new ArrayList<>();
+    private String lastActionExtension;
 
-    public ProcessManager() {
-        this.processors.add(new WeatherAPIProcessor());
-        this.processors.add(new DarkSkyProcessor());
-        this.processors.add(new ClimacellAPIProcessor());
+    public MainController() {
+        this.controllers.add(new WeatherAPIController());
+        this.controllers.add(new DarkSkyController());
+        this.controllers.add(new ClimacellAPIController());
     }
 
     @RequestMapping("/today")
@@ -40,20 +47,23 @@ public class ProcessManager {
 
         ArrayList<ProcessThread> processThreads = new ArrayList<>();
 
-        for (Processor processor: processors) {
-            if (processor.canNowcast()) {
-                ProcessThread processThread = new ProcessThread(processor, weatherDataList, lat, lon);
+        for (Controller controller : controllers) {
+            if (controller.canNowcast()) {
+                ProcessThread processThread = new ProcessThread(controller, weatherDataList, lat, lon);
                 processThread.start();
                 processThreads.add(processThread);
             }
         }
 
-        for (ProcessThread processThread: processThreads) {
-            try {
-                processThread.join();
-            } catch (InterruptedException e) {
-                logger.error("Got InterruptedException trying to access thread that was getting the API response.");
-                return "Got InterruptedException trying to access thread that was getting the API response.";
+        ArrayList<ProcessThread> finishedThreads = new ArrayList<>();
+        while (finishedThreads.size() < 3) {
+            for (ProcessThread thread: processThreads) {
+                if (thread.getThrownException() != null) {
+                    return "One or more of the threads got this exception while processing API requests: " + thread.getThrownException().getMessage();
+                }
+                if (!thread.isAlive()) {
+                    finishedThreads.add(thread);
+                }
             }
         }
 
@@ -86,9 +96,9 @@ public class ProcessManager {
 
         ArrayList<ProcessThread> processThreads = new ArrayList<>();
 
-        for (Processor processor: processors) {
-            if(processor.canProcessDate(localDate)) {
-                ProcessThread processThread = new ProcessThread(processor, weatherDataList, localDate, lat, lon);
+        for (Controller controller : controllers) {
+            if(controller.canProcessDate(localDate)) {
+                ProcessThread processThread = new ProcessThread(controller, weatherDataList, localDate, lat, lon);
                 processThread.start();
                 processThreads.add(processThread);
             }
@@ -115,9 +125,9 @@ public class ProcessManager {
         }
 
         try {
-            for (Processor processor: processors) {
-                if (processor.canProcessAlerts()) {
-                    alert = processor.getAlerts(lat, lon);
+            for (Controller controller : controllers) {
+                if (controller.canProcessAlerts()) {
+                    alert = controller.getAlerts(lat, lon);
                 }
             }
         } catch (IncorrectLocationException locationExc) {
@@ -128,52 +138,59 @@ public class ProcessManager {
         return writeData(saveMethod, alert);
     }
 
-    private String writeData(String saveMethod, Data data) {
-        WordWriter wordWriter = new WordWriter();
+    @RequestMapping(value = "/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public @ResponseBody ResponseEntity<ByteArrayResource> download() throws IOException {
+        String fileName = "response." + this.lastActionExtension;
+        File file = new File(fileName);
 
-        if (data instanceof WeatherDataList) {
-            WeatherDataList weatherDataList = (WeatherDataList) data;
-            try {
-                if (saveMethod.equals("xml")) {
-                    XMLResponseWriter.write(weatherDataList);
-                    wordWriter.write("forecastData.xml");
-                } else if (saveMethod.equals("json")) {
-                    JSONResponseWriter.write(weatherDataList);
-                    wordWriter.write("forecastData.json");
-                } else {
-                    return "Incorrect Save Parameter.";
-                }
-            } catch (JAXBException e) {
-                logger.error("Got JAXBException trying to marshall data into file");
-                e.printStackTrace();
-            } catch (FileNotFoundException e) {
-                logger.error("Couldn't find file to marshall data into.");
-                e.printStackTrace();
-            }
+        Path path = Paths.get(file.getAbsolutePath());
+        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
-            return weatherDataList.getWeatherDataList().toString();
-        } else if (data instanceof Alert) {
-            Alert alert = (Alert) data;
-            try {
-                if (saveMethod.equals("xml")) {
-                    XMLResponseWriter.write(alert);
-                    wordWriter.write("alert.xml");
-                } else if (saveMethod.equals("json")) {
-                    JSONResponseWriter.write(alert);
-                    wordWriter.write("alert.json");
-                } else {
-                    return "Incorrect Save Parameter.";
-                }
-            } catch (JAXBException e) {
-                logger.error("Got JAXBException trying to marshall data into file");
-                e.printStackTrace();
-            } catch (FileNotFoundException e) {
-                logger.error("Couldn't find file to marshall data into.");
-                e.printStackTrace();
-            }
-
-            return data.toString();
+        HttpHeaders headers = new HttpHeaders();
+        if (this.lastActionExtension.equals("docx") || this.lastActionExtension.equals("word")) {
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=response.docx");
+        } else if (this.lastActionExtension.equals("xml")) {
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=response.xml");
+        } else if (this.lastActionExtension.equals("json")) {
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=response.json");
         }
-        return "";
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(file.length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(resource);
+    }
+
+    private String writeData(String saveMethod, Data data) {
+        if (saveMethod.equals("docx") || saveMethod.equals("word")) {
+            WordWriter wordWriter = new WordWriter();
+
+            this.lastActionExtension = saveMethod;
+
+            try {
+                return wordWriter.write(data);
+            } catch (IOException e) {
+                logger.error("Got IOException trying to write data into a word file.", e);
+                return "Unable to save data to a word file. (IOException -" + e.getMessage() + ")";
+            }
+        } else if (saveMethod.equals("xml")) {
+            this.lastActionExtension = saveMethod;
+
+            try {
+                return XMLWriter.write(data);
+            } catch (JAXBException e) {
+                return "Unable to write data into xml file.";
+            }
+        } else if (saveMethod.equals("json")) {
+            this.lastActionExtension = saveMethod;
+            try {
+                return JSONWriter.write(data);
+            } catch (JAXBException e) {
+                return "Unable to write data into json file.";
+            }
+        } else {
+            return "Invalid save method";
+        }
     }
 }

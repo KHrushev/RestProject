@@ -1,6 +1,6 @@
-package com.example.restproject.model;
+package com.restproject.model;
 
-import com.example.restproject.writers.LocalDateTimeAdapter;
+import com.restproject.writers.LocalDateTimeAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

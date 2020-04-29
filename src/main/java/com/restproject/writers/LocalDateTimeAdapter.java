@@ -1,4 +1,4 @@
-package com.example.restproject.writers;
+package com.restproject.writers;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.LocalDateTime;

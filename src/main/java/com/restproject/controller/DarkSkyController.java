@@ -1,25 +1,35 @@
-package com.example.restproject.controller;
+package com.restproject.controller;
 
-import com.example.restproject.model.Alert;
-import com.example.restproject.model.WeatherData;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.restproject.model.Alert;
+import com.restproject.model.InaccessibleAPIException;
+import com.restproject.model.WeatherData;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 
-public class DarkSkyProcessor implements Processor {
+@Service
+public class DarkSkyController implements Controller {
     private Logger logger = new LoggingController().logger;
     private final int FORECAST_DAY_LIMIT = 7;
 
+    @Value("${api.key.darksky}")
+    String key;
+
     @Override
-    public WeatherData today(float lat, float lon) {
-        String url = "https://api.darksky.net/forecast/c9667ada3c4d06b8e1f7fd4b856337d3/" + lat + "," + lon + "?exclude=[minutely,hourly,daily,alerts,flags]";
+    public WeatherData today(float lat, float lon) throws InaccessibleAPIException {
+        String url = "https://api.darksky.net/forecast/" + key + "/" + lat + "," + lon + "?exclude=[minutely,hourly,daily,alerts,flags]";
 
         try {
             String response = getAPIResponse(url);
@@ -31,10 +41,9 @@ public class DarkSkyProcessor implements Processor {
             }
 
             return weatherData;
-        } catch (IOException e) {
-            logger.error("Error occurred while trying to get/format API response.");
-            e.printStackTrace();
-            return null;
+        } catch (Exception e) {
+            logger.error("Exception occurred while trying to get/format API response. " + e.getClass().getName());
+            throw new InaccessibleAPIException("Unable to get weather data from this API (DarkSky) because it is inaccessible right now.");
         }
     }
 

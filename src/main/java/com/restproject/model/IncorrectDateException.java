@@ -1,4 +1,4 @@
-package com.example.restproject.controller;
+package com.restproject.model;
 
 public class IncorrectDateException extends Exception {
 

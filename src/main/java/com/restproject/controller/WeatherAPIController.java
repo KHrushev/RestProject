@@ -1,7 +1,8 @@
-package com.example.restproject.controller;
+package com.restproject.controller;
 
-import com.example.restproject.model.Alert;
-import com.example.restproject.model.WeatherData;
+import com.restproject.model.Alert;
+import com.restproject.model.InaccessibleAPIException;
+import com.restproject.model.WeatherData;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -12,19 +13,23 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public class WeatherAPIProcessor implements Processor {
+public class WeatherAPIController implements Controller {
     private Logger logger = new LoggingController().logger;
     private final int FORECAST_DAY_LIMIT = 16;
 
+    @Value("${api.key.weatherbit}")
+    private String key;
+
     @Override
-    public WeatherData today(float lat, float lon) {
-        String url = "https://api.weatherbit.io/v2.0/current?lat=" + lat + "&lon=" + lon + "&key=10d23961b91f476abe5dd2cae0314424";
+    public WeatherData today(float lat, float lon) throws InaccessibleAPIException {
+        String url = "https://api.weatherbit.io/v2.0/current?lat=" + lat + "&lon=" + lon + "&key=" + key;
         try {
             String response = getAPIResponse(url);
 
@@ -33,9 +38,9 @@ public class WeatherAPIProcessor implements Processor {
             }
 
             return format(response);
-        } catch (IOException e) {
-            logger.error("Got IOException while trying to get/format API response.");
-            return null;
+        } catch (Exception e) {
+            logger.error("Exception occurred while trying to get/format API response. " + e.getClass().getName());
+            throw new InaccessibleAPIException("Unable to get weather data from this API (WeatherBit) because it is inaccessible right now.");
         }
     }
 
