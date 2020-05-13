@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @XmlRootElement(name = "weatherData")
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class WeatherData implements Serializable {
-    private Float lat;
-    private Float lon;
-    private Float temp;
+    private float lat;
+    private float lon;
+    private float temp;
     private String timezone;
     private LocalDateTime ob_time;
 

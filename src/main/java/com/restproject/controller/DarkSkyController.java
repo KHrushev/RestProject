@@ -10,7 +10,9 @@ import com.restproject.model.Alert;
 import com.restproject.model.InaccessibleAPIException;
 import com.restproject.model.WeatherData;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -19,14 +21,16 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 
-@Service
 public class DarkSkyController implements Controller {
     private Logger logger = new LoggingController().logger;
     private final int FORECAST_DAY_LIMIT = 7;
+    private String key;
 
-    @Value("${api.key.darksky}")
-    String key;
+    public DarkSkyController (String key) {
+        this.key = key;
+    }
 
+    @Async
     @Override
     public WeatherData today(float lat, float lon) throws InaccessibleAPIException {
         String url = "https://api.darksky.net/forecast/" + key + "/" + lat + "," + lon + "?exclude=[minutely,hourly,daily,alerts,flags]";
@@ -42,7 +46,7 @@ public class DarkSkyController implements Controller {
 
             return weatherData;
         } catch (Exception e) {
-            logger.error("Exception occurred while trying to get/format API response. " + e.getClass().getName());
+            logger.error("Exception occurred while trying to get/format DarkSky API response. " + e.getClass().getName());
             throw new InaccessibleAPIException("Unable to get weather data from this API (DarkSky) because it is inaccessible right now.");
         }
     }

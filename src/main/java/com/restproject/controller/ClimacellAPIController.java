@@ -12,7 +12,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,10 +21,13 @@ import java.time.LocalTime;
 public class ClimacellAPIController implements Controller {
     private Logger logger = new LoggingController().logger;
     private final int FORECAST_DAY_LIMIT = 3;
-
-    @Value("${api.key.climacell}")
     private String key;
 
+    public ClimacellAPIController (String key) {
+        this.key = key;
+    }
+
+    @Async
     @Override
     public WeatherData today(float lat, float lon) throws InaccessibleAPIException {
         HttpResponse<String> response = null;

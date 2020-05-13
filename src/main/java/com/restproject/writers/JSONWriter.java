@@ -46,21 +46,4 @@ public class JSONWriter {
             return "Unable to write data into json file. (IOException - " + e.getMessage() + ")";
         }
     }
-
-//    public static void write(Alert data) throws JAXBException, FileNotFoundException {
-//        try (FileOutputStream stream = new FileOutputStream("alert.json")) {
-//            System.setProperty("javax.xml.bind.context.factory", "org.eclipse.persistence.jaxb.JAXBContextFactory");
-//
-//            JAXBContext context = JAXBContext.newInstance(Alert.class);
-//            Marshaller marshaller = context.createMarshaller();
-//
-//            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//            marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
-//            marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
-//
-//            marshaller.marshal(data, stream);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

@@ -5,6 +5,7 @@ import com.restproject.writers.JSONWriter;
 import com.restproject.writers.WordWriter;
 import com.restproject.writers.XMLWriter;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -31,10 +33,17 @@ public class MainController {
     private List<Controller> controllers = new ArrayList<>();
     private String lastActionExtension;
 
-    public MainController() {
-        this.controllers.add(new WeatherAPIController());
-        this.controllers.add(new DarkSkyController());
-        this.controllers.add(new ClimacellAPIController());
+//    @Value("${api.key.weatherbit}")
+//    private String weatherBitKey;
+//    @Value("${api.key.darksky}")
+//    private String darkSkyKey;
+//    @Value("${api.key.climacell}")
+//    private String climaCellKey;
+
+    public MainController(@Value("${api.key.weatherbit}") String weatherBitKey, @Value("${api.key.darksky}") String darkSkyKey, @Value("${api.key.climacell}") String climaCellKey) {
+        this.controllers.add(new WeatherAPIController(weatherBitKey));
+        this.controllers.add(new DarkSkyController(darkSkyKey));
+        this.controllers.add(new ClimacellAPIController(climaCellKey));
     }
 
     @RequestMapping("/today")
@@ -45,24 +54,12 @@ public class MainController {
             return "Invalid coordinates";
         }
 
-        ArrayList<ProcessThread> processThreads = new ArrayList<>();
-
-        for (Controller controller : controllers) {
+        for (Controller controller: controllers) {
             if (controller.canNowcast()) {
-                ProcessThread processThread = new ProcessThread(controller, weatherDataList, lat, lon);
-                processThread.start();
-                processThreads.add(processThread);
-            }
-        }
-
-        ArrayList<ProcessThread> finishedThreads = new ArrayList<>();
-        while (finishedThreads.size() < 3) {
-            for (ProcessThread thread: processThreads) {
-                if (thread.getThrownException() != null) {
-                    return "One or more of the threads got this exception while processing API requests: " + thread.getThrownException().getMessage();
-                }
-                if (!thread.isAlive()) {
-                    finishedThreads.add(thread);
+                try {
+                    weatherDataList.addWeatherData(controller.today(lat, lon));
+                } catch (InaccessibleAPIException e) {
+                    logger.error("API is inaccessible right now. Stack trace: " + Arrays.toString(e.getStackTrace()));
                 }
             }
         }
